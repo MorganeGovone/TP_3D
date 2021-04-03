@@ -52,6 +52,14 @@ function createScene() {
     createLights(scene);
     createHeroDude(scene);
     createAlien(scene);
+
+    var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:3000.0}, scene);
+    var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+    skyboxMaterial.backFaceCulling = false;
+    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("images/Skybox/skybox", scene);
+    skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+    skybox.material = skyboxMaterial;
+
    return scene;
 }
 
@@ -62,7 +70,7 @@ function createGround(scene) {
 
     function onGroundCreated() {
         const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
-        groundMaterial.diffuseTexture = new BABYLON.Texture("images/grass.jpg");
+        groundMaterial.diffuseTexture = new BABYLON.Texture("images/sable.jpg");
         ground.material = groundMaterial;
         // to be taken into account by collision detection
         ground.checkCollisions = true;
