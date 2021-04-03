@@ -50,9 +50,8 @@ function createScene() {
     scene.activeCamera = followCamera;
 
     createLights(scene);
-
     createHeroDude(scene);
- 
+    createAlien(scene);
    return scene;
 }
 
@@ -103,8 +102,8 @@ function createFreeCamera(scene) {
 function createFollowCamera(scene, target) {
     let camera = new BABYLON.FollowCamera("tankFollowCamera", target.position, scene, target);
 
-    camera.radius = 40; // how far from the object to follow
-	camera.heightOffset = 14; // how high above the object to place the camera
+    camera.radius = 60; // how far from the object to follow
+	camera.heightOffset = 5; // how high above the object to place the camera
 	camera.rotationOffset = 180; // the viewing angle
 	camera.cameraAcceleration = .1; // how fast to move
 	camera.maxCameraSpeed = 5; // speed limit
@@ -122,7 +121,7 @@ function createTank(scene) {
 
     // By default the box/tank is in 0, 0, 0, let's change that...
     tank.position.y = 0.6;
-    tank.speed = 1;
+    tank.speed = 1.5;
     tank.frontVector = new BABYLON.Vector3(0, 0, 1);
 
     tank.move = () => {
@@ -165,6 +164,15 @@ function createTank(scene) {
     return tank;
 }
 
+function createAlien(scene){
+    
+    BABYLON.SceneLoader.ImportMesh("", "models/Alien/", "Alien.gltf", scene, function (meshes) {          
+        scene.createDefaultCameraOrLight(true, true, true);
+        scene.createDefaultEnvironment();
+    });
+
+}
+
 function createHeroDude(scene) {
    // load the Dude 3D animated model
     // name, folder, skeleton name 
@@ -188,7 +196,7 @@ function createHeroDude(scene) {
 
         // make clones
         scene.dudes = [];
-        for(let i = 0; i < 10; i++) {
+        for(let i = 0; i < 5; i++) {
             scene.dudes[i] = doClone(heroDude, skeletons, i);
             scene.beginAnimation(scene.dudes[i].skeleton, 0, 120, true, 1);
 
