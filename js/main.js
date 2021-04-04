@@ -43,7 +43,7 @@ function createScene() {
     let ground = createGround(scene);
     let freeCamera = createFreeCamera(scene);
 
-    let tank = createTank(scene);
+    let tank = createTank(scene,ground);
 
     // second parameter is the target to follow
     let followCamera = createFollowCamera(scene, tank);
@@ -56,7 +56,7 @@ function createScene() {
     var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:3000.0}, scene);
     var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
     skyboxMaterial.backFaceCulling = false;
-    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("images/Skybox/skybox", scene);
+    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("images/Skybox/skybox3", scene);
     skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
     skybox.material = skyboxMaterial;
 
@@ -64,13 +64,13 @@ function createScene() {
 }
 
 function createGround(scene) {
-    const groundOptions = { width:2000, height:2000, subdivisions:20, minHeight:0, maxHeight:100, onReady: onGroundCreated};
+    const groundOptions = { width:2000, height:2000, subdivisions:20, minHeight:0, maxHeight:50, onReady: onGroundCreated};
     //scene is optional and defaults to the current scene
     const ground = BABYLON.MeshBuilder.CreateGroundFromHeightMap("gdhm", 'images/hmap1.png', groundOptions, scene); 
 
     function onGroundCreated() {
         const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
-        groundMaterial.diffuseTexture = new BABYLON.Texture("images/sable.jpg");
+        groundMaterial.diffuseTexture = new BABYLON.Texture("images/sol.jpg");
         ground.material = groundMaterial;
         // to be taken into account by collision detection
         ground.checkCollisions = true;
@@ -81,7 +81,7 @@ function createGround(scene) {
 
 function createLights(scene) {
     // i.e sun light with all light rays parallels, the vector is the direction.
-    let light0 = new BABYLON.DirectionalLight("dir0", new BABYLON.Vector3(-1, -1, 0), scene);
+    let light0 = new BABYLON.DirectionalLight("dir0", new BABYLON.Vector3(0, -1, 0), scene);
 
 }
 
@@ -120,7 +120,7 @@ function createFollowCamera(scene, target) {
 }
 
 let zMovement = 5;
-function createTank(scene) {
+function createTank(scene,ground) {
     let tank = new BABYLON.MeshBuilder.CreateBox("heroTank", {height:1, depth:6, width:6}, scene);
     let tankMaterial = new BABYLON.StandardMaterial("tankMaterial", scene);
     tankMaterial.diffuseColor = new BABYLON.Color3.Red;
@@ -129,7 +129,7 @@ function createTank(scene) {
 
     // By default the box/tank is in 0, 0, 0, let's change that...
     tank.position.y = 0.6;
-    tank.speed = 1.5;
+    tank.speed = 2;
     tank.frontVector = new BABYLON.Vector3(0, 0, 1);
 
     tank.move = () => {
@@ -143,28 +143,31 @@ function createTank(scene) {
        
         if (tank.position.y > 2) {
             zMovement = 0;
-            yMovement = -2;
-        } 
+            yMovement = 0;
+
+        } else {
         //tank.moveWithCollisions(new BABYLON.Vector3(0, yMovement, zMovement));
 
-        if(inputStates.up) {
-            //tank.moveWithCollisions(new BABYLON.Vector3(0, 0, 1*tank.speed));
-            tank.moveWithCollisions(tank.frontVector.multiplyByFloats(tank.speed, tank.speed, tank.speed));
-        }    
-        if(inputStates.down) {
-            //tank.moveWithCollisions(new BABYLON.Vector3(0, 0, -1*tank.speed));
-            tank.moveWithCollisions(tank.frontVector.multiplyByFloats(-tank.speed, -tank.speed, -tank.speed));
+            if(inputStates.up) {
+                //tank.moveWithCollisions(new BABYLON.Vector3(0, 0, 1*tank.speed));
+                tank.moveWithCollisions(tank.frontVector.multiplyByFloats(tank.speed, tank.speed, tank.speed));
+                console.log(ground._width);
+            }    
+            if(inputStates.down) {
+                //tank.moveWithCollisions(new BABYLON.Vector3(0, 0, -1*tank.speed));
+                tank.moveWithCollisions(tank.frontVector.multiplyByFloats(-tank.speed, -tank.speed, -tank.speed));
 
-        }    
-        if(inputStates.left) {
-            //tank.moveWithCollisions(new BABYLON.Vector3(-1*tank.speed, 0, 0));
-            tank.rotation.y -= 0.02;
-            tank.frontVector = new BABYLON.Vector3(Math.sin(tank.rotation.y), 0, Math.cos(tank.rotation.y));
-        }    
-        if(inputStates.right) {
-            //tank.moveWithCollisions(new BABYLON.Vector3(1*tank.speed, 0, 0));
-            tank.rotation.y += 0.02;
-            tank.frontVector = new BABYLON.Vector3(Math.sin(tank.rotation.y), 0, Math.cos(tank.rotation.y));
+            }    
+            if(inputStates.left) {
+                //tank.moveWithCollisions(new BABYLON.Vector3(-1*tank.speed, 0, 0));
+                tank.rotation.y -= 0.02;
+                tank.frontVector = new BABYLON.Vector3(Math.sin(tank.rotation.y), 0, Math.cos(tank.rotation.y));
+            }    
+            if(inputStates.right) {
+                //tank.moveWithCollisions(new BABYLON.Vector3(1*tank.speed, 0, 0));
+                tank.rotation.y += 0.02;
+                tank.frontVector = new BABYLON.Vector3(Math.sin(tank.rotation.y), 0, Math.cos(tank.rotation.y));
+            }
         }
 
     }
