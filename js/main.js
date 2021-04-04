@@ -18,11 +18,13 @@ function startGame() {
     modifySettings();
 
     let tank = scene.getMeshByName("heroTank");
+    let vaisseau = scene.getMeshByName("heroVaisseau");
 
     engine.runRenderLoop(() => {
         let deltaTime = engine.getDeltaTime(); // remind you something ?
 
-        tank.move();
+        //tank.move();
+        vaisseau.move();
 
         let heroDude = scene.getMeshByName("heroDude");
         if(heroDude)
@@ -43,10 +45,11 @@ function createScene() {
     let ground = createGround(scene);
     let freeCamera = createFreeCamera(scene);
 
-    let tank = createTank(scene,ground);
+    //let tank = createTank(scene,ground);
+    let vaisseau = createVaisseau(scene,ground)
 
     // second parameter is the target to follow
-    let followCamera = createFollowCamera(scene, tank);
+    let followCamera = createFollowCamera(scene, vaisseau /*tank*/);
     scene.activeCamera = followCamera;
 
     createLights(scene);
@@ -174,6 +177,63 @@ function createTank(scene,ground) {
 
     return tank;
 }
+
+function createVaisseau(scene,ground) {
+    let vaisseau = new BABYLON.MeshBuilder.CreateCylinder("heroVaisseau", {diameterTop: 3,height:3,diameterBottom:15,tessellation:6});
+    let vaisseauMaterial = new BABYLON.StandardMaterial("vaisseauMaterial", scene);
+    vaisseauMaterial.diffuseTexture = new BABYLON.Texture("images/ovni.jpg", scene);
+    vaisseauMaterial.diffuseTexture.vOffset +=0.005;
+    //vaisseauMaterial.diffuseColor = new BABYLON.Color3.Red;
+    //vaisseauMaterial.emissiveColor = new BABYLON.Color3.Blue;
+    vaisseau.material = vaisseauMaterial;
+
+    // By default the box/tank is in 0, 0, 0, let's change that...
+    vaisseau.position.y = 5;
+    vaisseau.speed = 2;
+    vaisseau.frontVector = new BABYLON.Vector3(0, 0, 1);
+
+    vaisseau.move = () => {
+                //tank.position.z += -1; // speed should be in unit/s, and depends on
+                                 // deltaTime !
+
+        // if we want to move while taking into account collision detections
+        // collision uses by default "ellipsoids"
+
+        let yMovement = 0;
+       
+        if (vaisseau.position.y > 7) {
+            zMovement = 0;
+            yMovement = 0;
+
+        } else {
+        //tank.moveWithCollisions(new BABYLON.Vector3(0, yMovement, zMovement));
+
+            if(inputStates.up) {
+                //tank.moveWithCollisions(new BABYLON.Vector3(0, 0, 1*tank.speed));
+                vaisseau.moveWithCollisions(vaisseau.frontVector.multiplyByFloats(vaisseau.speed, vaisseau.speed, vaisseau.speed));
+                console.log(ground._width);
+            }    
+            if(inputStates.down) {
+                //tank.moveWithCollisions(new BABYLON.Vector3(0, 0, -1*tank.speed));
+                vaisseau.moveWithCollisions(vaisseau.frontVector.multiplyByFloats(-vaisseau.speed, -vaisseau.speed, -vaisseau.speed));
+
+            }    
+            if(inputStates.left) {
+                //tank.moveWithCollisions(new BABYLON.Vector3(-1*tank.speed, 0, 0));
+                vaisseau.rotation.y -= 0.02;
+                vaisseau.frontVector = new BABYLON.Vector3(Math.sin(vaisseau.rotation.y), 0, Math.cos(vaisseau.rotation.y));
+            }    
+            if(inputStates.right) {
+                //tank.moveWithCollisions(new BABYLON.Vector3(1*tank.speed, 0, 0));
+                vaisseau.rotation.y += 0.02;
+                vaisseau.frontVector = new BABYLON.Vector3(Math.sin(vaisseau.rotation.y), 0, Math.cos(vaisseau.rotation.y));
+            }
+        }
+
+    }
+    return vaisseau;
+}
+
 
 function createAlien(scene){
     
