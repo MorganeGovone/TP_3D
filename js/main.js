@@ -19,12 +19,17 @@ function startGame() {
 
     let tank = scene.getMeshByName("heroTank");
     let vaisseau = scene.getMeshByName("heroVaisseau");
+    let lumVaisseau = scene.getMeshByName("herolumiere")
+    lumVaisseau.parent = vaisseau;
 
     engine.runRenderLoop(() => {
         let deltaTime = engine.getDeltaTime(); // remind you something ?
 
         //tank.move();
         vaisseau.move();
+        lumVaisseau.moveL();
+
+        lumVaisseau.rotation.y += 0.05;
 
         let heroDude = scene.getMeshByName("heroDude");
         if(heroDude)
@@ -46,7 +51,8 @@ function createScene() {
     let freeCamera = createFreeCamera(scene);
 
     //let tank = createTank(scene,ground);
-    let vaisseau = createVaisseau(scene,ground)
+    let vaisseau = createVaisseau(scene);
+    let lumVaisseau = createLumVaisseau(scene);
 
     // second parameter is the target to follow
     let followCamera = createFollowCamera(scene, vaisseau /*tank*/);
@@ -113,7 +119,7 @@ function createFreeCamera(scene) {
 function createFollowCamera(scene, target) {
     let camera = new BABYLON.FollowCamera("tankFollowCamera", target.position, scene, target);
 
-    camera.radius = 60; // how far from the object to follow
+    camera.radius = 100; // how far from the object to follow
 	camera.heightOffset = 5; // how high above the object to place the camera
 	camera.rotationOffset = 180; // the viewing angle
 	camera.cameraAcceleration = .1; // how fast to move
@@ -178,17 +184,16 @@ function createTank(scene,ground) {
     return tank;
 }
 
-function createVaisseau(scene,ground) {
-    let vaisseau = new BABYLON.MeshBuilder.CreateCylinder("heroVaisseau", {diameterTop: 3,height:3,diameterBottom:15,tessellation:6});
+function createVaisseau(scene) {
+    let vaisseau = new BABYLON.MeshBuilder.CreateCylinder("heroVaisseau", {diameterTop: 4,height:6,diameterBottom:20,tessellation:6});
     let vaisseauMaterial = new BABYLON.StandardMaterial("vaisseauMaterial", scene);
     vaisseauMaterial.diffuseTexture = new BABYLON.Texture("images/ovni.jpg", scene);
-    vaisseauMaterial.diffuseTexture.vOffset +=0.005;
-    //vaisseauMaterial.diffuseColor = new BABYLON.Color3.Red;
-    //vaisseauMaterial.emissiveColor = new BABYLON.Color3.Blue;
+    vaisseauMaterial.diffuseTexture.uOffset +=0.005;
+    vaisseauMaterial.diffuseColor = new BABYLON.Color3(265,265,265);
     vaisseau.material = vaisseauMaterial;
 
     // By default the box/tank is in 0, 0, 0, let's change that...
-    vaisseau.position.y = 5;
+    vaisseau.position.y = 40;
     vaisseau.speed = 2;
     vaisseau.frontVector = new BABYLON.Vector3(0, 0, 1);
 
@@ -200,23 +205,21 @@ function createVaisseau(scene,ground) {
         // collision uses by default "ellipsoids"
 
         let yMovement = 0;
+
        
-        if (vaisseau.position.y > 7) {
+        if (vaisseau.position.y > 42) {
             zMovement = 0;
             yMovement = 0;
-
         } else {
         //tank.moveWithCollisions(new BABYLON.Vector3(0, yMovement, zMovement));
 
             if(inputStates.up) {
                 //tank.moveWithCollisions(new BABYLON.Vector3(0, 0, 1*tank.speed));
                 vaisseau.moveWithCollisions(vaisseau.frontVector.multiplyByFloats(vaisseau.speed, vaisseau.speed, vaisseau.speed));
-                console.log(ground._width);
             }    
             if(inputStates.down) {
                 //tank.moveWithCollisions(new BABYLON.Vector3(0, 0, -1*tank.speed));
                 vaisseau.moveWithCollisions(vaisseau.frontVector.multiplyByFloats(-vaisseau.speed, -vaisseau.speed, -vaisseau.speed));
-
             }    
             if(inputStates.left) {
                 //tank.moveWithCollisions(new BABYLON.Vector3(-1*tank.speed, 0, 0));
@@ -234,6 +237,48 @@ function createVaisseau(scene,ground) {
     return vaisseau;
 }
 
+function createLumVaisseau(scene) {
+    let lumiere = new BABYLON.MeshBuilder.CreateCylinder("herolumiere", {diameterTop:3.5,height:86,diameterBottom:40});
+    let lumiereMaterial = new BABYLON.StandardMaterial("lumiereMaterial", scene);
+    lumiereMaterial.diffuseTexture = new BABYLON.Texture("images/lumovni.jpg", scene);
+    lumiereMaterial.alpha = 0.6;
+    lumiereMaterial.diffuseColor = new BABYLON.Color3(265,265,265);
+    lumiereMaterial.diffuseTexture.uScale +=0.005;
+    lumiere.material = lumiereMaterial;
+
+    lumiere.position.y = -40;
+    lumiere.frontVectorL = new BABYLON.Vector3(0, 0, 1);
+    
+
+    lumiere.moveL = () => {
+
+        let yMovement = 0;
+
+       
+        if (lumiere.position.y > 0) {
+            zMovement = 0;
+            yMovement = 0;
+        } else {
+
+            if(inputStates.up) {
+                lumiere.moveWithCollisions(lumiere.frontVectorL.multiplyByFloats(lumiere.speed, lumiere.speed, lumiere.speed));
+            }    
+            if(inputStates.down) {
+                lumiere.moveWithCollisions(lumiere.frontVectorL.multiplyByFloats(-lumiere.speed, -lumiere.speed, -lumiere.speed));
+            }    
+            if(inputStates.left) {
+                lumiere.rotation.y -= 0.02;
+                lumiere.frontVectorL = new BABYLON.Vector3(Math.sin(lumiere.rotation.y), 0, Math.cos(lumiere.rotation.y));
+            }    
+            if(inputStates.right) {
+                lumiere.rotation.y += 0.02;
+                lumiere.frontVectorL = new BABYLON.Vector3(Math.sin(lumiere.rotation.y), 0, Math.cos(lumiere.rotation.y));
+            }
+        }
+
+    }
+    return lumiere;
+}
 
 function createAlien(scene){
     
