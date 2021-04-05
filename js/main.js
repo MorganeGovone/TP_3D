@@ -55,7 +55,7 @@ function createScene() {
     let lumVaisseau = createLumVaisseau(scene);
 
     // second parameter is the target to follow
-    let followCamera = createFollowCamera(scene, vaisseau /*tank*/);
+    let followCamera = createFollowCamera(scene, vaisseau );
     scene.activeCamera = followCamera;
 
     createLights(scene);
@@ -90,8 +90,11 @@ function createGround(scene) {
 
 function createLights(scene) {
     // i.e sun light with all light rays parallels, the vector is the direction.
-    let light0 = new BABYLON.DirectionalLight("dir0", new BABYLON.Vector3(0, -1, 0), scene);
-
+    let light0 = new BABYLON.DirectionalLight("dir0", new BABYLON.Vector3(0, -1, 4), scene);
+    var lightA = new BABYLON.SpotLight("spotLight1", new BABYLON.Vector3(1, 500, 100), new BABYLON.Vector3(0, -1, 1), Math.PI / 2, 50, scene);
+    //lightA.specular = new BABYLON.Color3(0,0,0);
+    //lightA.diffuseColor = new BABYLON.Color3(1,0,0);
+    lightA.intensity = 2;
 }
 
 function createFreeCamera(scene) {
@@ -128,7 +131,7 @@ function createFollowCamera(scene, target) {
     return camera;
 }
 
-let zMovement = 5;
+let zMovementT = 5;
 function createTank(scene,ground) {
     let tank = new BABYLON.MeshBuilder.CreateBox("heroTank", {height:1, depth:6, width:6}, scene);
     let tankMaterial = new BABYLON.StandardMaterial("tankMaterial", scene);
@@ -148,11 +151,11 @@ function createTank(scene,ground) {
         // if we want to move while taking into account collision detections
         // collision uses by default "ellipsoids"
 
-        let yMovement = 0;
+        let yMovementT = 0;
        
         if (tank.position.y > 2) {
-            zMovement = 0;
-            yMovement = 0;
+            zMovementT = 0;
+            yMovementT = 0;
 
         } else {
         //tank.moveWithCollisions(new BABYLON.Vector3(0, yMovement, zMovement));
@@ -160,7 +163,6 @@ function createTank(scene,ground) {
             if(inputStates.up) {
                 //tank.moveWithCollisions(new BABYLON.Vector3(0, 0, 1*tank.speed));
                 tank.moveWithCollisions(tank.frontVector.multiplyByFloats(tank.speed, tank.speed, tank.speed));
-                console.log(ground._width);
             }    
             if(inputStates.down) {
                 //tank.moveWithCollisions(new BABYLON.Vector3(0, 0, -1*tank.speed));
@@ -184,11 +186,11 @@ function createTank(scene,ground) {
     return tank;
 }
 
+let zMovementV = 5;
 function createVaisseau(scene) {
     let vaisseau = new BABYLON.MeshBuilder.CreateCylinder("heroVaisseau", {diameterTop: 4,height:6,diameterBottom:20,tessellation:6});
     let vaisseauMaterial = new BABYLON.StandardMaterial("vaisseauMaterial", scene);
     vaisseauMaterial.diffuseTexture = new BABYLON.Texture("images/ovni.jpg", scene);
-    vaisseauMaterial.diffuseTexture.uOffset +=0.005;
     vaisseauMaterial.diffuseColor = new BABYLON.Color3(265,265,265);
     vaisseau.material = vaisseauMaterial;
 
@@ -204,12 +206,12 @@ function createVaisseau(scene) {
         // if we want to move while taking into account collision detections
         // collision uses by default "ellipsoids"
 
-        let yMovement = 0;
+        let yMovementV = 0;
 
        
         if (vaisseau.position.y > 42) {
-            zMovement = 0;
-            yMovement = 0;
+            zMovementV = 0;
+            yMovementV = 0;
         } else {
         //tank.moveWithCollisions(new BABYLON.Vector3(0, yMovement, zMovement));
 
@@ -237,42 +239,43 @@ function createVaisseau(scene) {
     return vaisseau;
 }
 
+let zMovementL = 5;
 function createLumVaisseau(scene) {
     let lumiere = new BABYLON.MeshBuilder.CreateCylinder("herolumiere", {diameterTop:3.5,height:86,diameterBottom:40});
     let lumiereMaterial = new BABYLON.StandardMaterial("lumiereMaterial", scene);
     lumiereMaterial.diffuseTexture = new BABYLON.Texture("images/lumovni.jpg", scene);
     lumiereMaterial.alpha = 0.6;
     lumiereMaterial.diffuseColor = new BABYLON.Color3(265,265,265);
-    lumiereMaterial.diffuseTexture.uScale +=0.005;
     lumiere.material = lumiereMaterial;
 
     lumiere.position.y = -40;
-    lumiere.frontVectorL = new BABYLON.Vector3(0, 0, 1);
+    lumiere.speed =0;
+    lumiere.frontVector = new BABYLON.Vector3(0, 0, 1);
     
 
     lumiere.moveL = () => {
 
-        let yMovement = 0;
+        let yMovementL = 0;
 
        
         if (lumiere.position.y > 0) {
-            zMovement = 0;
-            yMovement = 0;
+            zMovementL = 0;
+            yMovementL = 0;
         } else {
 
             if(inputStates.up) {
-                lumiere.moveWithCollisions(lumiere.frontVectorL.multiplyByFloats(lumiere.speed, lumiere.speed, lumiere.speed));
+                lumiere.moveWithCollisions(lumiere.frontVector.multiplyByFloats(lumiere.speed, lumiere.speed, lumiere.speed));
             }    
             if(inputStates.down) {
-                lumiere.moveWithCollisions(lumiere.frontVectorL.multiplyByFloats(-lumiere.speed, -lumiere.speed, -lumiere.speed));
+                lumiere.moveWithCollisions(lumiere.frontVector.multiplyByFloats(-lumiere.speed, -lumiere.speed, -lumiere.speed));
             }    
             if(inputStates.left) {
                 lumiere.rotation.y -= 0.02;
-                lumiere.frontVectorL = new BABYLON.Vector3(Math.sin(lumiere.rotation.y), 0, Math.cos(lumiere.rotation.y));
+                lumiere.frontVector = new BABYLON.Vector3(Math.sin(lumiere.rotation.y), 0, Math.cos(lumiere.rotation.y));
             }    
             if(inputStates.right) {
                 lumiere.rotation.y += 0.02;
-                lumiere.frontVectorL = new BABYLON.Vector3(Math.sin(lumiere.rotation.y), 0, Math.cos(lumiere.rotation.y));
+                lumiere.frontVector = new BABYLON.Vector3(Math.sin(lumiere.rotation.y), 0, Math.cos(lumiere.rotation.y));
             }
         }
 
@@ -282,11 +285,12 @@ function createLumVaisseau(scene) {
 
 function createAlien(scene){
     
-    BABYLON.SceneLoader.ImportMesh("", "models/Alien/", "Alien.gltf", scene, function (meshes) {          
-        scene.createDefaultCameraOrLight(true, true, true);
-        scene.createDefaultEnvironment();
+    BABYLON.SceneLoader.ImportMesh("", "models/Alien/", "Alien.gltf", scene, function (meshes) {  
+        let alien = meshes[0];
+        alien.position.y = 140;
+        alien.position.z = 400;
+        alien.scaling = new BABYLON.Vector3(200, 200, 200); 
     });
-
 }
 
 function createHeroDude(scene) {
@@ -312,7 +316,7 @@ function createHeroDude(scene) {
 
         // make clones
         scene.dudes = [];
-        for(let i = 0; i < 5; i++) {
+        for(let i = 0; i < 1; i++) {
             scene.dudes[i] = doClone(heroDude, skeletons, i);
             scene.beginAnimation(scene.dudes[i].skeleton, 0, 120, true, 1);
 

@@ -15,11 +15,13 @@ export default class Dude {
 
     move(scene) {
                   // follow the tank
-                  let tank = scene.getMeshByName("heroVaisseau");
+                  //let tank = scene.getMeshByName("heroVaisseau");
+                  let lumiere = scene.getMeshByName("herolumiere");
+                  //console.log(lumiere.position);
                   // let's compute the direction vector that goes from Dude to the tank
-                  let direction = tank.position.subtract(this.dudeMesh.position);
+                  let direction = lumiere.position.subtract(this.dudeMesh.position);
                   let distance = direction.length(); // we take the vector that is not normalized, not the dir vector
-                  //console.log(distance);
+                  //console.log(lumiere.position.subtract(this.dudeMesh.position));
       
                   let dir = direction.normalize();
                   // angle between Dude and tank, to set the new rotation.y of the Dude so that he will look towards the tank
