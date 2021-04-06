@@ -21,6 +21,7 @@ function startGame() {
     let vaisseau = scene.getMeshByName("heroVaisseau");
     let lumVaisseau = scene.getMeshByName("herolumiere");
     let alien = scene.getMeshByName("alienMaster");
+    let BrainStem = scene.getMeshByName("bStem");
     lumVaisseau.parent = vaisseau;
 
     engine.runRenderLoop(() => {
@@ -58,10 +59,11 @@ function createScene() {
     // second parameter is the target to follow
     let followCamera = createFollowCamera(scene, vaisseau );
     scene.activeCamera = followCamera;
-
+    
     createLights(scene);
     createHeroDude(scene);
     createAlien(scene);
+    createBrainStem(scene);
 
     var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:3000.0}, scene);
     var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
@@ -74,18 +76,16 @@ function createScene() {
 }
 
 function createGround(scene) {
-    const groundOptions = { width:2000, height:2000, subdivisions:20, minHeight:0, maxHeight:50, onReady: onGroundCreated};
     //scene is optional and defaults to the current scene
-    const ground = BABYLON.MeshBuilder.CreateGroundFromHeightMap("gdhm", 'images/hmap1.png', groundOptions, scene); 
-
-    function onGroundCreated() {
-        const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
-        groundMaterial.diffuseTexture = new BABYLON.Texture("images/sol.jpg");
-        ground.material = groundMaterial;
-        // to be taken into account by collision detection
-        ground.checkCollisions = true;
-        //groundMaterial.wireframe=true;
-    }
+    var ground = BABYLON.MeshBuilder.CreateDisc("ground", {radius: 1000}, scene);
+    ground.rotation.x = Math.PI / 2
+    ground.position.y= -10;
+    const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
+    groundMaterial.diffuseTexture = new BABYLON.Texture("images/sol.jpg");
+    ground.material = groundMaterial;
+    // to be taken into account by collision detection
+    ground.checkCollisions = true;
+    //groundMaterial.wireframe=true;
     return ground;
 }
 
@@ -289,11 +289,38 @@ function createAlien(scene){
     
     BABYLON.SceneLoader.ImportMesh("", "models/Alien/", "Alien.gltf", scene, function (meshes) {  
         let alien = meshes[0];
-        alien.name = "alienMaster"
-        alien.position.y = 140;
+        alien.position.y = 120;
         alien.position.z = 600;
         alien.scaling = new BABYLON.Vector3(200, 200, 200); 
+        alien.name = "alienMaster";
     });
+}
+
+function createBrainStem(scene){
+    const assetsManager = new BABYLON.AssetsManager(scene);
+    const modelTask = assetsManager.addMeshTask('model', null, "models/BrainStem/", "BrainStem.gltf");
+    modelTask.onSuccess = (task) => {
+      task.loadedMeshes.forEach((mesh) => {
+        mesh.scaling = new BABYLON.Vector3(30, 30, 30);
+        mesh.name = "bStem"
+        mesh.isVisible = false;
+        var d = 100;
+    for (var i = 0; i < 360; i += 90) {
+            var r = BABYLON.Tools.ToRadians(i);
+            if (mesh.geometry) {
+                const instance = mesh.createInstance('manta' + i);
+                instance.position.x = Math.cos(r) * d;
+                instance.position.y = -10;
+                instance.position.z = 625 + Math.sin(r) * d;
+
+                // instance.rotation.z = -Math.PI/4;
+                instance.rotation.y = -r;
+                instance.isVisible = true;
+            }
+        }
+      });
+    };
+    assetsManager.load();
 }
 
 function createHeroDude(scene) {
@@ -303,7 +330,7 @@ function createHeroDude(scene) {
         let heroDude = newMeshes[0];
         heroDude.position = new BABYLON.Vector3(0, 0, 5);  // The original dude
         // make it smaller 
-        heroDude.scaling = new BABYLON.Vector3(0.2  , 0.2, 0.2);
+        heroDude.scaling = new BABYLON.Vector3(0.3, 0.3, 0.3);
         //heroDude.speed = 0.1;
 
         // give it a name so that we can query the scene to get it by name

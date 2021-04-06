@@ -15,11 +15,10 @@ export default class Dude {
 
     move(scene) {
                   // follow the tank
-                  //let vaisseau = scene.getMeshByName("heroVaisseau");
-                  let lumiere = scene.getMeshByName("herolumiere");
-                  let alien = scene.getMeshByName("alienMaster");
+                  let vaisseau = scene.getMeshByName("heroVaisseau");
+                  //let lumiere = scene.getMeshByName("herolumiere");
                   // let's compute the direction vector that goes from Dude to the tank
-                  let direction = lumiere.position.subtract(this.dudeMesh.position);
+                  let direction = vaisseau.position.subtract(this.dudeMesh.position);
                   let distance = direction.length(); // we take the vector that is not normalized, not the dir vector
                   //console.log(lumiere.position.subtract(this.dudeMesh.position));
       
@@ -28,6 +27,7 @@ export default class Dude {
                   // make a drawing in the X/Z plan to uderstand....
                   let alpha = Math.atan2(-dir.x, -dir.z);
                   this.dudeMesh.rotation.y = alpha;
+                  //this.dudeMesh.position.y=-10;
       
                   // let make the Dude move towards the tank
                   if(distance > 30) {
