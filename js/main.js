@@ -19,7 +19,8 @@ function startGame() {
 
     let tank = scene.getMeshByName("heroTank");
     let vaisseau = scene.getMeshByName("heroVaisseau");
-    let lumVaisseau = scene.getMeshByName("herolumiere")
+    let lumVaisseau = scene.getMeshByName("herolumiere");
+    let alien = scene.getMeshByName("alienMaster");
     lumVaisseau.parent = vaisseau;
 
     engine.runRenderLoop(() => {
@@ -90,11 +91,11 @@ function createGround(scene) {
 
 function createLights(scene) {
     // i.e sun light with all light rays parallels, the vector is the direction.
-    let light0 = new BABYLON.DirectionalLight("dir0", new BABYLON.Vector3(0, -1, 4), scene);
-    var lightA = new BABYLON.SpotLight("spotLight1", new BABYLON.Vector3(1, 500, 100), new BABYLON.Vector3(0, -1, 1), Math.PI / 2, 50, scene);
-    //lightA.specular = new BABYLON.Color3(0,0,0);
-    //lightA.diffuseColor = new BABYLON.Color3(1,0,0);
-    lightA.intensity = 2;
+    let light0 = new BABYLON.DirectionalLight("dir0", new BABYLON.Vector3(0, -3, 4), scene);
+    light0.specular = new BABYLON.Color3(0,0,0);
+    light0.intensity = 0.6;
+    var lightA = new BABYLON.SpotLight("spotLight1", new BABYLON.Vector3(1, 500, 150), new BABYLON.Vector3(0, -1, 1), Math.PI / 2, 50, scene);
+    lightA.intensity = 4;
 }
 
 function createFreeCamera(scene) {
@@ -246,6 +247,7 @@ function createLumVaisseau(scene) {
     lumiereMaterial.diffuseTexture = new BABYLON.Texture("images/lumovni.jpg", scene);
     lumiereMaterial.alpha = 0.6;
     lumiereMaterial.diffuseColor = new BABYLON.Color3(265,265,265);
+    lumiereMaterial.emissiveColor = new BABYLON.Color3(265,265,265);
     lumiere.material = lumiereMaterial;
 
     lumiere.position.y = -40;
@@ -287,8 +289,9 @@ function createAlien(scene){
     
     BABYLON.SceneLoader.ImportMesh("", "models/Alien/", "Alien.gltf", scene, function (meshes) {  
         let alien = meshes[0];
+        alien.name = "alienMaster"
         alien.position.y = 140;
-        alien.position.z = 400;
+        alien.position.z = 600;
         alien.scaling = new BABYLON.Vector3(200, 200, 200); 
     });
 }
