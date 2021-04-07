@@ -16,11 +16,16 @@ export default class Dude {
     move(scene) {
                   // follow the tank
                   let vaisseau = scene.getMeshByName("heroVaisseau");
+                  this.dudeMesh.position.y=-10;
+
+                        //Tentative de suivre seulement la lumiere de l'ovni mais ne se deplace pas
                   //let lumiere = scene.getMeshByName("herolumiere");
                   // let's compute the direction vector that goes from Dude to the tank
                   let direction = vaisseau.position.subtract(this.dudeMesh.position);
+
+                        //Fais avancer les dudes vers l'alien mais ne s'arretent pas
+                  //let direction = new BABYLON.Vector3(0,0,1);
                   let distance = direction.length(); // we take the vector that is not normalized, not the dir vector
-                  //console.log(lumiere.position.subtract(this.dudeMesh.position));
       
                   let dir = direction.normalize();
                   // angle between Dude and tank, to set the new rotation.y of the Dude so that he will look towards the tank

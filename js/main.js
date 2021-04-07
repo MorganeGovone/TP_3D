@@ -57,7 +57,7 @@ function createScene() {
     let lumVaisseau = createLumVaisseau(scene);
 
     // second parameter is the target to follow
-    let followCamera = createFollowCamera(scene, vaisseau );
+    let followCamera = createFollowCamera(scene, vaisseau);
     scene.activeCamera = followCamera;
     
     createLights(scene);
@@ -70,6 +70,7 @@ function createScene() {
     skyboxMaterial.backFaceCulling = false;
     skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("images/Skybox/skybox3", scene);
     skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+    skyboxMaterial.disableLighting = true;
     skybox.material = skyboxMaterial;
 
    return scene;
@@ -93,9 +94,12 @@ function createLights(scene) {
     // i.e sun light with all light rays parallels, the vector is the direction.
     let light0 = new BABYLON.DirectionalLight("dir0", new BABYLON.Vector3(0, -3, 4), scene);
     light0.specular = new BABYLON.Color3(0,0,0);
-    light0.intensity = 0.6;
+    light0.intensity = 1;
+    let light1 = new BABYLON.DirectionalLight("dir1", new BABYLON.Vector3(0, -1, 0), scene);
+    light1.intensity = 0.1;
+    light1.emissiveColor = new BABYLON.Color3(0,0,0);
     var lightA = new BABYLON.SpotLight("spotLight1", new BABYLON.Vector3(1, 500, 150), new BABYLON.Vector3(0, -1, 1), Math.PI / 2, 50, scene);
-    lightA.intensity = 4;
+    lightA.intensity = 1;
 }
 
 function createFreeCamera(scene) {
@@ -346,7 +350,7 @@ function createHeroDude(scene) {
 
         // make clones
         scene.dudes = [];
-        for(let i = 0; i < 1; i++) {
+        for(let i = 0; i <10; i++) {
             scene.dudes[i] = doClone(heroDude, skeletons, i);
             scene.beginAnimation(scene.dudes[i].skeleton, 0, 120, true, 1);
 
