@@ -17,7 +17,6 @@ function startGame() {
     // out of the game window)
     modifySettings();
 
-    let tank = scene.getMeshByName("heroTank");
     let vaisseau = scene.getMeshByName("heroVaisseau");
     let lumVaisseau = scene.getMeshByName("herolumiere");
     let alien = scene.getMeshByName("alienMaster");
@@ -29,7 +28,6 @@ function startGame() {
     engine.runRenderLoop(() => {
         let deltaTime = engine.getDeltaTime(); // remind you something ?
 
-        //tank.move();
         vaisseau.move();
         lumVaisseau.moveL();
 
@@ -44,7 +42,7 @@ function startGame() {
             ballEP.position.y = 110 + 30* Math.sin((counter)/2);
             ballEG.position.x = 30* Math.sin((counter)/2);
             counter += 0.1;
-          } catch (error) { console.log(error)
+          } catch (error) { console.log("Chargement de la page")
           }
 
         let heroDude = scene.getMeshByName("heroDude");
@@ -53,7 +51,7 @@ function startGame() {
 
         if(scene.dudes) {
             for(var i = 0 ; i < scene.dudes.length ; i++) {
-                scene.dudes[i].Dude.move(scene,alien);
+                scene.dudes[i].Dude.move(scene);
             }
         }
         scene.render();
@@ -65,7 +63,6 @@ function createScene() {
     let ground = createGround(scene);
     let freeCamera = createFreeCamera(scene);
 
-    //let tank = createTank(scene,ground);
     let vaisseau = createVaisseau(scene);
     let lumVaisseau = createLumVaisseau(scene);
 
@@ -148,61 +145,6 @@ function createFollowCamera(scene, target) {
 	camera.maxCameraSpeed = 5; // speed limit
 
     return camera;
-}
-
-let zMovementT = 5;
-function createTank(scene,ground) {
-    let tank = new BABYLON.MeshBuilder.CreateBox("heroTank", {height:1, depth:6, width:6}, scene);
-    let tankMaterial = new BABYLON.StandardMaterial("tankMaterial", scene);
-    tankMaterial.diffuseColor = new BABYLON.Color3.Red;
-    tankMaterial.emissiveColor = new BABYLON.Color3.Blue;
-    tank.material = tankMaterial;
-
-    // By default the box/tank is in 0, 0, 0, let's change that...
-    tank.position.y = 0.6;
-    tank.speed = 2;
-    tank.frontVector = new BABYLON.Vector3(0, 0, 1);
-
-    tank.move = () => {
-                //tank.position.z += -1; // speed should be in unit/s, and depends on
-                                 // deltaTime !
-
-        // if we want to move while taking into account collision detections
-        // collision uses by default "ellipsoids"
-
-        let yMovementT = 0;
-       
-        if (tank.position.y > 2) {
-            zMovementT = 0;
-            yMovementT = 0;
-
-        } else {
-        //tank.moveWithCollisions(new BABYLON.Vector3(0, yMovement, zMovement));
-
-            if(inputStates.up) {
-                //tank.moveWithCollisions(new BABYLON.Vector3(0, 0, 1*tank.speed));
-                tank.moveWithCollisions(tank.frontVector.multiplyByFloats(tank.speed, tank.speed, tank.speed));
-            }    
-            if(inputStates.down) {
-                //tank.moveWithCollisions(new BABYLON.Vector3(0, 0, -1*tank.speed));
-                tank.moveWithCollisions(tank.frontVector.multiplyByFloats(-tank.speed, -tank.speed, -tank.speed));
-
-            }    
-            if(inputStates.left) {
-                //tank.moveWithCollisions(new BABYLON.Vector3(-1*tank.speed, 0, 0));
-                tank.rotation.y -= 0.02;
-                tank.frontVector = new BABYLON.Vector3(Math.sin(tank.rotation.y), 0, Math.cos(tank.rotation.y));
-            }    
-            if(inputStates.right) {
-                //tank.moveWithCollisions(new BABYLON.Vector3(1*tank.speed, 0, 0));
-                tank.rotation.y += 0.02;
-                tank.frontVector = new BABYLON.Vector3(Math.sin(tank.rotation.y), 0, Math.cos(tank.rotation.y));
-            }
-        }
-
-    }
-
-    return tank;
 }
 
 let zMovementV = 5;

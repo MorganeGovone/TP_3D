@@ -14,36 +14,27 @@ export default class Dude {
     }
 
     move(scene) {
-                  // follow the tank
-                  //let vaisseau = scene.getMeshByName("heroVaisseau");
-                  this.dudeMesh.position.y=-10;
+                
+        //Diriger les dudes vers l'alien
 
-                        //Tentative de suivre seulement la lumiere de l'ovni mais les dudes ne se deplacent pas
-                  //let lumiere = scene.getMeshByName("herolumiere");
+        let posAlien = new BABYLON.Vector3(0,0,600);
+        let direction = posAlien.subtract(this.dudeMesh.position);
 
-                        //Diriger les dudes vers l'alien (objectif 1er)
-                  //let alien = scene.getMeshByName("alienMaster");
-                  //let direction = alien.position.subtract(this.dudeMesh.position);
+        let distance = direction.length(); // we take the vector that is not normalized, not the dir vector
 
-                        //Fais avancer les dudes vers l'alien mais ne s'arretent pas (temporaire)
-                  let direction = new BABYLON.Vector3(0,0,50);
+        let dir = direction.normalize();
+        // angle between Dude and tank, to set the new rotation.y of the Dude so that he will look towards the tank
+        // make a drawing in the X/Z plan to uderstand....
+        let alpha = Math.atan2(-dir.x, -dir.z);
+        this.dudeMesh.rotation.y = alpha;
 
-                  //let distance = direction.length(); // we take the vector that is not normalized, not the dir vector
-      
-                  let dir = direction.normalize();
-                  // angle between Dude and tank, to set the new rotation.y of the Dude so that he will look towards the tank
-                  // make a drawing in the X/Z plan to uderstand....
-                  let alpha = Math.atan2(-dir.x, -dir.z);
-                  this.dudeMesh.rotation.y = alpha;
-      
-                  // let make the Dude move towards the tank
-                  if(this.dudeMesh.position.z < 480) {
-                      //a.restart();   
-                      //this.dudeMesh.moveWithCollisions(dir.multiplyByFloats(this.speed, this.speed, this.speed));
-                      this.dudeMesh.position.z += this.speed;
-                  }
-                  else {
-                      //a.pause();
-                  }   
+        // let make the Dude move towards the tank
+        if(distance > 150) {
+            //a.restart();   
+            this.dudeMesh.moveWithCollisions(dir.multiplyByFloats(this.speed, this.speed, this.speed));
+        }
+        else {
+            //a.pause();
+        }   
     }
 }
