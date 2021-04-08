@@ -1,19 +1,17 @@
 export default class Dude {
-    constructor(dudeMesh, speed) {
+    constructor(dudeMesh,skeleton, speed) {
         this.dudeMesh = dudeMesh;
+        this.skeleton = skeleton;
 
         if(speed)
             this.speed = speed;
         else
             this.speed = 1;
 
-        // in case, attach the instance to the mesh itself, in case we need to retrieve
-        // it after a scene.getMeshByName that would return the Mesh
-        // SEE IN RENDER LOOP !
         dudeMesh.Dude = this;
     }
 
-    move(scene) {
+    move(scene,skelet) {
                 
         //Diriger les dudes vers l'alien
 
@@ -23,8 +21,6 @@ export default class Dude {
         let distance = direction.length(); // we take the vector that is not normalized, not the dir vector
 
         let dir = direction.normalize();
-        // angle between Dude and tank, to set the new rotation.y of the Dude so that he will look towards the tank
-        // make a drawing in the X/Z plan to uderstand....
         let alpha = Math.atan2(-dir.x, -dir.z);
         this.dudeMesh.rotation.y = alpha;
 
@@ -34,7 +30,15 @@ export default class Dude {
             this.dudeMesh.moveWithCollisions(dir.multiplyByFloats(this.speed, this.speed, this.speed));
         }
         else {
-            //a.pause();
+            /*Essai pour arreter les dudes.
+            2 possibilites qui pourraient marcher : 
+                - faire un vecteur nul sur les positions de skeleton
+                - scene.stopAnimation(skeletons[0], 0, 100, true, 1.0);
+            Mais je n'ai pas reussi */
+
+            /*for(let i=0;i<this.skeleton.bones.length;i++){
+                this.skeleton.position = new BABYLON.Vector3(0,0,0);
+            }*/
         }   
     }
 }

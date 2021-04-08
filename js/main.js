@@ -22,7 +22,8 @@ function startGame() {
     let alien = scene.getMeshByName("alienMaster");
     let BrainStem = scene.getMeshByName("bStem");
     lumVaisseau.parent = vaisseau;
-    let counter = 10000;
+    let skelet = scene.getMeshByName("skeletonDude")
+    let counter = 1;
     
 
     engine.runRenderLoop(() => {
@@ -88,7 +89,8 @@ function createScene() {
 }
 
 function createGround(scene) {
-    //scene is optional and defaults to the current scene
+    //Sol arondi afin de simuler une planete
+
     var ground = BABYLON.MeshBuilder.CreateDisc("ground", {radius: 1000}, scene);
     ground.rotation.x = Math.PI / 2
     ground.position.y= -10;
@@ -148,6 +150,8 @@ function createFollowCamera(scene, target) {
 }
 
 let zMovementV = 5;
+//Fonction de creation du vaisseau 
+
 function createVaisseau(scene) {
     let vaisseau = new BABYLON.MeshBuilder.CreateCylinder("heroVaisseau", {diameterTop: 4,height:6,diameterBottom:20,tessellation:6});
     let vaisseauMaterial = new BABYLON.StandardMaterial("vaisseauMaterial", scene);
@@ -155,17 +159,12 @@ function createVaisseau(scene) {
     vaisseauMaterial.diffuseColor = new BABYLON.Color3(265,265,265);
     vaisseau.material = vaisseauMaterial;
 
-    // By default the box/tank is in 0, 0, 0, let's change that...
+    
     vaisseau.position.y = 40;
     vaisseau.speed = 2;
     vaisseau.frontVector = new BABYLON.Vector3(0, 0, 1);
 
     vaisseau.move = () => {
-                //tank.position.z += -1; // speed should be in unit/s, and depends on
-                                 // deltaTime !
-
-        // if we want to move while taking into account collision detections
-        // collision uses by default "ellipsoids"
 
         let yMovementV = 0;
 
@@ -174,23 +173,17 @@ function createVaisseau(scene) {
             zMovementV = 0;
             yMovementV = 0;
         } else {
-        //tank.moveWithCollisions(new BABYLON.Vector3(0, yMovement, zMovement));
-
             if(inputStates.up) {
-                //tank.moveWithCollisions(new BABYLON.Vector3(0, 0, 1*tank.speed));
                 vaisseau.moveWithCollisions(vaisseau.frontVector.multiplyByFloats(vaisseau.speed, vaisseau.speed, vaisseau.speed));
             }    
             if(inputStates.down) {
-                //tank.moveWithCollisions(new BABYLON.Vector3(0, 0, -1*tank.speed));
                 vaisseau.moveWithCollisions(vaisseau.frontVector.multiplyByFloats(-vaisseau.speed, -vaisseau.speed, -vaisseau.speed));
             }    
             if(inputStates.left) {
-                //tank.moveWithCollisions(new BABYLON.Vector3(-1*tank.speed, 0, 0));
                 vaisseau.rotation.y -= 0.02;
                 vaisseau.frontVector = new BABYLON.Vector3(Math.sin(vaisseau.rotation.y), 0, Math.cos(vaisseau.rotation.y));
             }    
             if(inputStates.right) {
-                //tank.moveWithCollisions(new BABYLON.Vector3(1*tank.speed, 0, 0));
                 vaisseau.rotation.y += 0.02;
                 vaisseau.frontVector = new BABYLON.Vector3(Math.sin(vaisseau.rotation.y), 0, Math.cos(vaisseau.rotation.y));
             }
@@ -201,6 +194,8 @@ function createVaisseau(scene) {
 }
 
 let zMovementL = 5;
+//Fonction de creation de la lumiere du vaisseau a l'aide d'un cone
+
 function createLumVaisseau(scene) {
     let lumiere = new BABYLON.MeshBuilder.CreateCylinder("herolumiere", {diameterTop:3.5,height:86,diameterBottom:40});
     let lumiereMaterial = new BABYLON.StandardMaterial("lumiereMaterial", scene);
@@ -245,6 +240,7 @@ function createLumVaisseau(scene) {
     return lumiere;
 }
 
+//Fonction de creation de l'alien
 function createAlien(scene){
     
     BABYLON.SceneLoader.ImportMesh("", "models/Alien/", "Alien.gltf", scene, function (meshes) {  
@@ -256,6 +252,7 @@ function createAlien(scene){
     });
 }
 
+//Fonction de creation des gardes du corps danseurs
 function createBrainStem(scene){
     const assetsManager = new BABYLON.AssetsManager(scene);
     const modelTask = assetsManager.addMeshTask('model', null, "models/BrainStem/", "BrainStem.gltf");
@@ -283,8 +280,10 @@ function createBrainStem(scene){
     assetsManager.load();
 }
 
+//Fonction de creation des boules d'energie presente autour de l'alien
 function createEnergyBall(scene){
     
+    //Boule jaune
     BABYLON.SceneLoader.ImportMesh("", "models/TrailMeshSpell/", "yellowEnergyBall.glb", scene, function (meshes) {  
         let ballE = meshes[0];
         ballE.scaling = new BABYLON.Vector3(2, 2, 2); 
@@ -293,6 +292,7 @@ function createEnergyBall(scene){
         ballE.position.z = 600;
     });
 
+    //Boule verte
     BABYLON.SceneLoader.ImportMesh("", "models/TrailMeshSpell/", "greenEnergyBall.glb", scene, function (meshes) {  
         let ballE = meshes[0];
         ballE.scaling = new BABYLON.Vector3(2, 2, 2); 
@@ -301,6 +301,7 @@ function createEnergyBall(scene){
         ballE.position.y = 200;
     });
 
+    //Boule rose
     BABYLON.SceneLoader.ImportMesh("", "models/TrailMeshSpell/", "pinkEnergyBall.glb", scene, function (meshes) {  
         let ballE = meshes[0];
         ballE.scaling = new BABYLON.Vector3(2, 2, 2); 
@@ -311,11 +312,13 @@ function createEnergyBall(scene){
     
 }
 
+//Fonction de creation des dudes
 function createHeroDude(scene) {
    // load the Dude 3D animated model
     // name, folder, skeleton name 
     BABYLON.SceneLoader.ImportMesh("him", "models/Dude/", "Dude.babylon", scene,  (newMeshes, particleSystems, skeletons) => {
         let heroDude = newMeshes[0];
+        let skeletonD = skeletons[0];
         heroDude.position = new BABYLON.Vector3(0, 0, 5);  // The original dude
         // make it smaller 
         heroDude.scaling = new BABYLON.Vector3(0.3, 0.3, 0.3);
@@ -323,6 +326,7 @@ function createHeroDude(scene) {
 
         // give it a name so that we can query the scene to get it by name
         heroDude.name = "heroDude";
+        skeletonD.name = "skeletonDude"
 
         // there might be more than one skeleton in an imported animated model. Try console.log(skeletons.length)
         // here we've got only 1. 
@@ -330,7 +334,7 @@ function createHeroDude(scene) {
         // loop the animation, speed, 
         let a = scene.beginAnimation(skeletons[0], 0, 120, true, 1);
 
-        let hero = new Dude(heroDude, 0.2);
+        let hero = new Dude(heroDude, skeletonD, 0.3);
 
         // make clones
         scene.dudes = [];
@@ -339,7 +343,7 @@ function createHeroDude(scene) {
             scene.beginAnimation(scene.dudes[i].skeleton, 0, 120, true, 1);
 
             // Create instance with move method etc.
-            var temp = new Dude(scene.dudes[i], 0.2);
+            var temp = new Dude(scene.dudes[i],skeletonD, 0.3);
             // remember that the instances are attached to the meshes
             // and the meshes have a property "Dude" that IS the instance
             // see render loop then....
