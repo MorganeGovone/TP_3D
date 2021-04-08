@@ -35,11 +35,11 @@ function startGame() {
 
         let heroDude = scene.getMeshByName("heroDude");
         if(heroDude)
-            heroDude.Dude.move(scene);
+            heroDude.Dude.move(scene,alien);
 
         if(scene.dudes) {
             for(var i = 0 ; i < scene.dudes.length ; i++) {
-                scene.dudes[i].Dude.move(scene);
+                scene.dudes[i].Dude.move(scene,alien);
             }
         }    
 
@@ -346,7 +346,7 @@ function createHeroDude(scene) {
         // loop the animation, speed, 
         let a = scene.beginAnimation(skeletons[0], 0, 120, true, 1);
 
-        let hero = new Dude(heroDude, 0.1);
+        let hero = new Dude(heroDude, 0.2);
 
         // make clones
         scene.dudes = [];
@@ -355,7 +355,7 @@ function createHeroDude(scene) {
             scene.beginAnimation(scene.dudes[i].skeleton, 0, 120, true, 1);
 
             // Create instance with move method etc.
-            var temp = new Dude(scene.dudes[i], 0.3);
+            var temp = new Dude(scene.dudes[i], 0.2);
             // remember that the instances are attached to the meshes
             // and the meshes have a property "Dude" that IS the instance
             // see render loop then....
