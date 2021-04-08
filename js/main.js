@@ -23,6 +23,7 @@ function startGame() {
     let alien = scene.getMeshByName("alienMaster");
     let BrainStem = scene.getMeshByName("bStem");
     lumVaisseau.parent = vaisseau;
+    
 
     engine.runRenderLoop(() => {
         let deltaTime = engine.getDeltaTime(); // remind you something ?
@@ -32,17 +33,19 @@ function startGame() {
         lumVaisseau.moveL();
 
         lumVaisseau.rotation.y += 0.05;
+        
+        let ballE = scene.getMeshByName("ballE");
+        //ballE.moveB();
 
         let heroDude = scene.getMeshByName("heroDude");
         if(heroDude)
-            heroDude.Dude.move(scene,alien);
+            heroDude.Dude.move(scene);
 
         if(scene.dudes) {
             for(var i = 0 ; i < scene.dudes.length ; i++) {
                 scene.dudes[i].Dude.move(scene,alien);
             }
-        }    
-
+        }
         scene.render();
     });
 }
@@ -61,9 +64,10 @@ function createScene() {
     scene.activeCamera = followCamera;
     
     createLights(scene);
-    createHeroDude(scene);
     createAlien(scene);
     createBrainStem(scene);
+    createEnergyBall(scene);
+    createHeroDude(scene);
 
     var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:3000.0}, scene);
     var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
@@ -309,7 +313,7 @@ function createBrainStem(scene){
         mesh.name = "bStem"
         mesh.isVisible = false;
         var d = 100;
-    for (var i = 0; i < 360; i += 90) {
+    for (var i = 0; i < 360; i += 45) {
             var r = BABYLON.Tools.ToRadians(i);
             if (mesh.geometry) {
                 const instance = mesh.createInstance('manta' + i);
@@ -325,6 +329,27 @@ function createBrainStem(scene){
       });
     };
     assetsManager.load();
+}
+
+function createEnergyBall(scene){
+    
+    BABYLON.SceneLoader.ImportMesh("", "models/TrailMeshSpell/", "yellowEnergyBall.glb", scene, function (meshes) {  
+        let ballE = meshes[0];
+        ballE.scaling = new BABYLON.Vector3(2, 2, 2); 
+        ballE.name= "ballE";
+        ballE.position.x = -100;
+        ballE.position.y = 100;
+        ballE.position.z = 600;
+        
+        function moveB(){
+        for(let i=0;i<2;i++){
+        ballE.position.z = 2*i + Math.sin((i*counter)/2);
+        counter += 0.005;
+        return ballE;
+        }
+    }
+    });
+    
 }
 
 function createHeroDude(scene) {
