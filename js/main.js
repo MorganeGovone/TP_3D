@@ -23,6 +23,7 @@ function startGame() {
     let alien = scene.getMeshByName("alienMaster");
     let BrainStem = scene.getMeshByName("bStem");
     lumVaisseau.parent = vaisseau;
+    let counter = 10000;
     
 
     engine.runRenderLoop(() => {
@@ -34,8 +35,17 @@ function startGame() {
 
         lumVaisseau.rotation.y += 0.05;
         
-        let ballE = scene.getMeshByName("ballE");
-        //ballE.moveB();
+        let ballEY = scene.getMeshByName("ballEY");
+        let ballEG = scene.getMeshByName("ballEG");
+        let ballEP = scene.getMeshByName("ballEP");
+        
+        try {
+            ballEY.position.y = 110 + 30* Math.sin((counter)/2);
+            ballEP.position.y = 110 + 30* Math.sin((counter)/2);
+            ballEG.position.x = 30* Math.sin((counter)/2);
+            counter += 0.1;
+          } catch (error) { console.log(error)
+          }
 
         let heroDude = scene.getMeshByName("heroDude");
         if(heroDude)
@@ -336,18 +346,25 @@ function createEnergyBall(scene){
     BABYLON.SceneLoader.ImportMesh("", "models/TrailMeshSpell/", "yellowEnergyBall.glb", scene, function (meshes) {  
         let ballE = meshes[0];
         ballE.scaling = new BABYLON.Vector3(2, 2, 2); 
-        ballE.name= "ballE";
+        ballE.name= "ballEY";
         ballE.position.x = -100;
-        ballE.position.y = 100;
         ballE.position.z = 600;
-        
-        function moveB(){
-        for(let i=0;i<2;i++){
-        ballE.position.z = 2*i + Math.sin((i*counter)/2);
-        counter += 0.005;
-        return ballE;
-        }
-    }
+    });
+
+    BABYLON.SceneLoader.ImportMesh("", "models/TrailMeshSpell/", "greenEnergyBall.glb", scene, function (meshes) {  
+        let ballE = meshes[0];
+        ballE.scaling = new BABYLON.Vector3(2, 2, 2); 
+        ballE.name= "ballEG";
+        ballE.position.z = 600;
+        ballE.position.y = 200;
+    });
+
+    BABYLON.SceneLoader.ImportMesh("", "models/TrailMeshSpell/", "pinkEnergyBall.glb", scene, function (meshes) {  
+        let ballE = meshes[0];
+        ballE.scaling = new BABYLON.Vector3(2, 2, 2); 
+        ballE.name= "ballEP";
+        ballE.position.x = 100;
+        ballE.position.z = 600;
     });
     
 }
